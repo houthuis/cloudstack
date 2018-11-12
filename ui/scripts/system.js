@@ -3844,7 +3844,7 @@
                                                 }
                                             },
 
-                                            diagnostics: {
+                                            runDiagnostics: {
                                                 label: 'label.action.run.diagnostics',
                                                 messages: {
                                                     notification: function (args) {
@@ -3863,6 +3863,87 @@
                                                 },
                                                 createForm: {
                                                     title: 'label.action.run.diagnostics',
+                                                    desc: '',
+                                                    fields: {
+                                                        type: {
+                                                            label: 'label.run.diagnostics.type',
+                                                            validation: {
+                                                                required: true
+                                                            },
+                                                            select: function (args) {
+                                                                var items = [];
+                                                                items.push({
+                                                                    id: "ping",
+                                                                    description: "Ping"
+                                                                });
+                                                                items.push({
+                                                                    id: "traceroute",
+                                                                    description: "Traceroute"
+                                                                });
+                                                                items.push({
+                                                                    id: "arping",
+                                                                    description: "Arping"
+                                                                });
+                                                                args.response.success({
+                                                                    data: items
+                                                                });
+                                                            }
+                                                        },
+                                                        destination: {
+                                                            label: 'label.run.diagnostics.destination',
+                                                            validation: {
+                                                                required: true
+                                                            }
+                                                        },
+                                                        extra: {
+                                                            label: 'label.run.diagnostics.extra'
+                                                        }
+
+                                                    }
+                                                },
+                                                action: function (args) {
+                                                    $.ajax({
+                                                        url: createURL("runDiagnostics&targetid=" + args.context.systemVMs[0].id + "&ipaddress=" + args.data.destination + "&type=" + args.data.type + "&params=" + args.data.extra),
+                                                        dataType: "json",
+                                                        async: true,
+                                                        success: function(json) {
+                                                            var jid = json.rundiagnosticsresponse.jobid;
+                                                            args.response.success({
+                                                                _custom: {
+                                                                    jobId : jid,
+                                                                    getUpdatedItem: function (json) {
+                                                                        return json.queryasyncjobresultresponse.jobresult.diagnostics;
+
+                                                                    },
+                                                                    getActionFilter: function(){
+                                                                        return systemvmActionfilter;
+                                                                   }
+                                                                }
+
+                                                            });
+                                                        }
+                                                    }); //end ajax
+                                                },
+                                                notification: {
+                                                    poll: pollAsyncJobResult
+                                                }
+                                            },
+
+                                            retrieveDiagnostics: {
+                                                label: 'label.action.retrieve.diagnostics',
+                                                messages: {
+                                                    notification: function (args) {
+                                                        return 'label.action.retrieve.diagnostics';
+                                                    },
+                                                    complete: function(args) {
+                                                        var url = args.url;
+                                                        var htmlMsg = _l('message.retrieve.diagnostics');
+                                                        var htmlMsg2 = htmlMsg.replace(/#/, url).replace(/00000/, url);
+                                                        return htmlMsg2;
+                                                    }
+                                                },
+                                                createForm: {
+                                                    title: 'label.action.retrieve.diagnostics',
                                                     desc: '',
                                                     fields: {
                                                         type: {
@@ -8946,7 +9027,7 @@
                                                         }
                                                     },
 
-                                                    diagnostics: {
+                                                    runDiagnostics: {
                                                         label: 'label.action.run.diagnostics',
                                                         messages: {
                                                             notification: function (args) {
@@ -10358,7 +10439,8 @@
                                     },
 
                                     // VR Diagnostics
-                                    diagnostics: {
+
+                                    runDiagnostics: {
                                         label: 'label.action.run.diagnostics',
                                         messages: {
                                             notification: function (args) {
@@ -11708,7 +11790,7 @@
                                 }
                             },
 
-                            diagnostics: {
+                            runDiagnostics: {
                                 label: 'label.action.run.diagnostics',
                                 messages: {
                                     notification: function (args) {
