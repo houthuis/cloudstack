@@ -3947,48 +3947,26 @@
                                                     desc: '',
                                                     fields: {
                                                         type: {
-                                                            label: 'label.run.diagnostics.type',
-                                                            validation: {
-                                                                required: true
-                                                            },
-                                                            select: function (args) {
-                                                                var items = [];
-                                                                items.push({
-                                                                    id: "ping",
-                                                                    description: "Ping"
-                                                                });
-                                                                items.push({
-                                                                    id: "traceroute",
-                                                                    description: "Traceroute"
-                                                                });
-                                                                items.push({
-                                                                    id: "arping",
-                                                                    description: "Arping"
-                                                                });
-                                                                args.response.success({
-                                                                    data: items
-                                                                });
-                                                            }
-                                                        },
-                                                        destination: {
-                                                            label: 'label.run.diagnostics.destination',
+                                                            label: 'label.retrieve.diagnostics.type',
                                                             validation: {
                                                                 required: true
                                                             }
                                                         },
-                                                        extra: {
-                                                            label: 'label.run.diagnostics.extra'
+                                                        detail: {
+                                                            label: 'label.retrieve.diagnostics.files',
+                                                            validation: {
+                                                                required: true
+                                                            }
                                                         }
-
                                                     }
                                                 },
                                                 action: function (args) {
                                                     $.ajax({
-                                                        url: createURL("runDiagnostics&targetid=" + args.context.systemVMs[0].id + "&ipaddress=" + args.data.destination + "&type=" + args.data.type + "&params=" + args.data.extra),
+                                                        url: createURL("retrieveDiagnostics&targetid=" + args.context.systemVMs[0].id + "&type=" + args.data.type + "&detail=" + args.data.detail),
                                                         dataType: "json",
                                                         async: true,
                                                         success: function(json) {
-                                                            var jid = json.rundiagnosticsresponse.jobid;
+                                                            var jid = json.retrievediagnosticsresponse.jobid;
                                                             args.response.success({
                                                                 _custom: {
                                                                     jobId : jid,
@@ -9112,6 +9090,65 @@
                                                         }
                                                     },
 
+                                                    retrieveDiagnostics: {
+                                                        label: 'label.action.retrieve.diagnostics',
+                                                        messages: {
+                                                            notification: function (args) {
+                                                                return 'label.action.retrieve.diagnostics';
+                                                            },
+                                                            complete: function(args) {
+                                                                var url = args.url;
+                                                                var htmlMsg = _l('message.retrieve.diagnostics');
+                                                                var htmlMsg2 = htmlMsg.replace(/#/, url).replace(/00000/, url);
+                                                                return htmlMsg2;
+                                                            }
+                                                        },
+                                                        createForm: {
+                                                            title: 'label.action.retrieve.diagnostics',
+                                                            desc: '',
+                                                            fields: {
+                                                                type: {
+                                                                    label: 'label.retrieve.diagnostics.type',
+                                                                    validation: {
+                                                                        required: true
+                                                                    }
+                                                                },
+                                                                detail: {
+                                                                    label: 'label.retrieve.diagnostics.files',
+                                                                    validation: {
+                                                                        required: true
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        action: function (args) {
+                                                            $.ajax({
+                                                                url: createURL("retrieveDiagnostics&targetid=" + args.context.systemVMs[0].id + "&type=" + args.data.type + "&detail=" + args.data.detail),
+                                                                dataType: "json",
+                                                                async: true,
+                                                                success: function(json) {
+                                                                    var jid = json.retrievediagnosticsresponse.jobid;
+                                                                    args.response.success({
+                                                                        _custom: {
+                                                                            jobId : jid,
+                                                                            getUpdatedItem: function (json) {
+                                                                                return json.queryasyncjobresultresponse.jobresult.diagnostics;
+
+                                                                            },
+                                                                            getActionFilter: function(){
+                                                                                return systemvmActionfilter;
+                                                                           }
+                                                                        }
+
+                                                                    });
+                                                                }
+                                                            }); //end ajax
+                                                        },
+                                                        notification: {
+                                                            poll: pollAsyncJobResult
+                                                        }
+                                                    },
+
                                                     scaleUp: {
                                                         label: 'label.change.service.offering',
                                                         createForm: {
@@ -10525,6 +10562,65 @@
                                         }
                                     },
 
+                                    retrieveDiagnostics: {
+                                        label: 'label.action.retrieve.diagnostics',
+                                        messages: {
+                                            notification: function (args) {
+                                                return 'label.action.retrieve.diagnostics';
+                                            },
+                                            complete: function(args) {
+                                                var url = args.url;
+                                                var htmlMsg = _l('message.retrieve.diagnostics');
+                                                var htmlMsg2 = htmlMsg.replace(/#/, url).replace(/00000/, url);
+                                                return htmlMsg2;
+                                            }
+                                        },
+                                        createForm: {
+                                            title: 'label.action.retrieve.diagnostics',
+                                            desc: '',
+                                            fields: {
+                                                type: {
+                                                    label: 'label.retrieve.diagnostics.type',
+                                                    validation: {
+                                                        required: true
+                                                    }
+                                                },
+                                                detail: {
+                                                    label: 'label.retrieve.diagnostics.files',
+                                                    validation: {
+                                                        required: true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        action: function (args) {
+                                            $.ajax({
+                                                url: createURL("retrieveDiagnostics&targetid=" + args.context.systemVMs[0].id + "&type=" + args.data.type + "&detail=" + args.data.detail),
+                                                dataType: "json",
+                                                async: true,
+                                                success: function(json) {
+                                                    var jid = json.retrievediagnosticsresponse.jobid;
+                                                    args.response.success({
+                                                        _custom: {
+                                                            jobId : jid,
+                                                            getUpdatedItem: function (json) {
+                                                                return json.queryasyncjobresultresponse.jobresult.diagnostics;
+
+                                                            },
+                                                            getActionFilter: function(){
+                                                                return systemvmActionfilter;
+                                                           }
+                                                        }
+
+                                                    });
+                                                }
+                                            }); //end ajax
+                                        },
+                                        notification: {
+                                            poll: pollAsyncJobResult
+                                        }
+                                    },
+
                                     scaleUp: { //*** Infrastructure > Virtual Routers > change service offering ***
                                         label: 'label.change.service.offering',
                                         createForm: {
@@ -11854,6 +11950,65 @@
                                         async: true,
                                         success: function(json) {
                                             var jid = json.rundiagnosticsresponse.jobid;
+                                            args.response.success({
+                                                _custom: {
+                                                    jobId : jid,
+                                                    getUpdatedItem: function (json) {
+                                                        return json.queryasyncjobresultresponse.jobresult.diagnostics;
+
+                                                    },
+                                                    getActionFilter: function(){
+                                                        return systemvmActionfilter;
+                                                   }
+                                                }
+
+                                            });
+                                        }
+                                    }); //end ajax
+                                },
+                                notification: {
+                                    poll: pollAsyncJobResult
+                                }
+                            },
+
+                            retrieveDiagnostics: {
+                                label: 'label.action.retrieve.diagnostics',
+                                messages: {
+                                    notification: function (args) {
+                                        return 'label.action.retrieve.diagnostics';
+                                    },
+                                    complete: function(args) {
+                                        var url = args.url;
+                                        var htmlMsg = _l('message.retrieve.diagnostics');
+                                        var htmlMsg2 = htmlMsg.replace(/#/, url).replace(/00000/, url);
+                                        return htmlMsg2;
+                                    }
+                                },
+                                createForm: {
+                                    title: 'label.action.retrieve.diagnostics',
+                                    desc: '',
+                                    fields: {
+                                        type: {
+                                            label: 'label.retrieve.diagnostics.type',
+                                            validation: {
+                                                required: true
+                                            }
+                                        },
+                                        detail: {
+                                            label: 'label.retrieve.diagnostics.files',
+                                            validation: {
+                                                required: true
+                                            }
+                                        }
+                                    }
+                                },
+                                action: function (args) {
+                                    $.ajax({
+                                        url: createURL("retrieveDiagnostics&targetid=" + args.context.systemVMs[0].id + "&type=" + args.data.type + "&detail=" + args.data.detail),
+                                        dataType: "json",
+                                        async: true,
+                                        success: function(json) {
+                                            var jid = json.retrievediagnosticsresponse.jobid;
                                             args.response.success({
                                                 _custom: {
                                                     jobId : jid,

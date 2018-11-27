@@ -1469,6 +1469,8 @@ var dictionary = {
 "label.restart.required":"Restart required",
 "label.restart.vpc":"Restart VPC",
 "label.restore":"Restore",
+"label.retrieve.diagnostics.type":"Data File Type",
+"label.retrieve.diagnostics.files":"Additional Files",
 "label.retry.interval":"Retry Interval",
 "label.review":"Review",
 "label.revoke.project.invite":"Revoke invitation",
